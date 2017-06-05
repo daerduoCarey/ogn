@@ -36,4 +36,4 @@ class OGNSelectLevelLayer : public OGNLayer<Dtype> {
 
 }  // namespace caffe
 
-#endif  // OGN_S2D_LAYER_HPP_
+#endif  // OGN_SELECT_LEVEL_LAYER_HPP_
