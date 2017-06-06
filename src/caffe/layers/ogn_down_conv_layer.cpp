@@ -59,7 +59,7 @@ void OGNDownConvLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 		boost::shared_ptr<Layer<Dtype> > base_ptr = this->parent_net()->layer_by_name(key_layer_name);
 		boost::shared_ptr<OGNLayer<Dtype> > l_ptr = boost::dynamic_pointer_cast<OGNLayer<Dtype> >(base_ptr);
 
-		_num_output_pixels = 0;
+		_num_output_pixels = 1;
 
 		_next_level_keys.clear();
 		for (int n = 0; n < _batch_size; ++n) {

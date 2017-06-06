@@ -34,7 +34,9 @@ void OGNDownConvLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
 
     for (int n = 0; n < _batch_size; ++n)
     {
-            resize_computation_buffers_cpu(this->_octree_keys[n].num_elements());
+	    int num_elements = this->_octree_keys[n].num_elements();
+	    resize_computation_buffers_cpu(num_elements);
+
             im2col_octree_cpu(n, bottom, top);
 
             caffe_gpu_gemm<Dtype>(CblasNoTrans, CblasTrans, _weight_shape[0], _col_buffer_shape[0], _col_buffer_shape[1],
