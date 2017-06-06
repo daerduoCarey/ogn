@@ -36,7 +36,6 @@ void OGNDataLabelLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
         {
 		if(data_shuffle) {
 			int random_ind = rand() % _model_counter;
-			std::cout<<random_ind<<std::endl;
                 	batch_elements.push_back(random_ind);
 		} else {
 			batch_elements.push_back(_current_model_ind);
