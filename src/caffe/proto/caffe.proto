@@ -424,6 +424,7 @@ message LayerParameter {
   optional OGNS2DParameter ogn_s2d_param = 1007;
   optional OGNLevelPredParameter ogn_level_pred_param = 1008;
   optional OGNSelectLevelParameter ogn_select_level_param = 1009;
+  optional OGNDataLabelParameter ogn_data_label_param = 1010;
 
   // Ming-Yu Edit Begin
   optional RandomNoiseParameter random_noise_param = 23493001;
@@ -1249,6 +1250,15 @@ message OGNDataParameter{
   optional uint32 batch_size = 1;
   optional string source = 2;
   optional bool preload_data = 3 [default = true];
+}
+
+// Added by Kaichun Mo
+message OGNDataLabelParameter{
+  required uint32 batch_size = 1;
+  required string model_source = 2;
+  required string label_source = 3;
+  optional bool preload_data = 4 [default = true];
+  optional bool shuffle = 5 [default = false];
 }
 
 message OGNLossPrepParameter {

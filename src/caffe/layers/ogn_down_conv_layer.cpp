@@ -136,7 +136,7 @@ void OGNDownConvLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 	propagate_keys_cpu();
 
 	for (int n=0; n<_batch_size; n++) {
-		int num_elements = this->_next_level_keys[n].size();
+		int num_elements = this->_octree_keys[n].num_elements();
 		resize_computation_buffers_cpu(num_elements);
 		im2col_octree_cpu(n, bottom, top);
 		forward_cpu_gemm(this->blobs_[0]->cpu_data(), _col_buffer.cpu_data(),
@@ -156,9 +156,6 @@ void OGNDownConvLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 	Dtype* bias_diff = this->blobs_[1]->mutable_cpu_diff();
 	const Dtype* top_diff = top[0]->cpu_diff();
 
-	memset(weight_diff, 0, sizeof(Dtype)*_num_output_channels*_num_input_channels*_filter_size*_filter_size*_filter_size);
-	memset(bias_diff, 0, sizeof(Dtype)*_num_output_channels);
-	
 	for (int n = 0; n < _batch_size; ++n) {
 		resize_computation_buffers_cpu(this->_octree_keys[n].num_elements());
 		im2col_octree_cpu(n, bottom, top);

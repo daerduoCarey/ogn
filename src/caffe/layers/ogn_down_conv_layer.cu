@@ -17,7 +17,7 @@ void OGNDownConvLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
     	im2col_octree_cpu(n, bottom, top);
     	caffe_gpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, _weight_shape[0],
 			_col_buffer_shape[1], _col_buffer_shape[0],
-	    		(Dtype)1., this->blobs_[0]->gpu_data(), _col_buffer.mutable_gpu_data(),
+	    		(Dtype)1., this->blobs_[0]->gpu_data(), _col_buffer.gpu_data(),
 	    		(Dtype)0., top[0]->mutable_gpu_data() + n * _num_output_channels * _num_output_pixels);
     	caffe_gpu_gemm<Dtype>(CblasNoTrans, CblasNoTrans, _bias_shape[0], _num_output_pixels, 1,
 	    		(Dtype)1., this->blobs_[1]->gpu_data(), _bias_multiplier.gpu_data(), (Dtype)1., top[0]->mutable_gpu_data() +
