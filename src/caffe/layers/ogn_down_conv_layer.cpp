@@ -15,6 +15,8 @@ void OGNDownConvLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
 	this->blobs_.resize(2);
 
+	_done_initial_reshape = false;
+
 	_filter_size = 2;
 
         _weight_shape.push_back(_num_output_channels);
@@ -43,41 +45,51 @@ void OGNDownConvLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 	
 	_batch_size = bottom[0]->shape(0);
 	_num_input_pixels = bottom[0]->shape(2);
-    
-	std::string key_layer_name = this->layer_param_.ogn_down_conv_param().key_layer();
-	boost::shared_ptr<Layer<Dtype> > base_ptr = this->parent_net()->layer_by_name(key_layer_name);
-	boost::shared_ptr<OGNLayer<Dtype> > l_ptr = boost::dynamic_pointer_cast<OGNLayer<Dtype> >(base_ptr);
+   
+	if(!_done_initial_reshape) {
+		vector<int> features_shape;
+		features_shape.push_back(_batch_size);
+		features_shape.push_back(_num_output_channels);
+		features_shape.push_back(1);
+		top[0]->Reshape(features_shape);
 
-	_num_output_pixels = 0;
+		_done_initial_reshape = true;
+	} else {
+		std::string key_layer_name = this->layer_param_.ogn_down_conv_param().key_layer();
+		boost::shared_ptr<Layer<Dtype> > base_ptr = this->parent_net()->layer_by_name(key_layer_name);
+		boost::shared_ptr<OGNLayer<Dtype> > l_ptr = boost::dynamic_pointer_cast<OGNLayer<Dtype> >(base_ptr);
 
-	_next_level_keys.clear();
-	for (int n = 0; n < _batch_size; ++n) {
-		set<KeyType> next_level_keys;
-		GeneralOctree<int> cur_key_octree = l_ptr->get_keys_octree(n);
-		for(typename GeneralOctree<int>::iterator it=cur_key_octree.begin(); it!=cur_key_octree.end(); it++) {
-			KeyType key = it->first;
-			if (key != GeneralOctree<int>::INVALID_KEY()) {
-				key >>= 3;
-				next_level_keys.insert(key);
+		_num_output_pixels = 0;
+
+		_next_level_keys.clear();
+		for (int n = 0; n < _batch_size; ++n) {
+			set<KeyType> next_level_keys;
+			GeneralOctree<int> cur_key_octree = l_ptr->get_keys_octree(n);
+			for(typename GeneralOctree<int>::iterator it=cur_key_octree.begin(); it!=cur_key_octree.end(); it++) {
+				KeyType key = it->first;
+				if (key != GeneralOctree<int>::INVALID_KEY()) {
+					key >>= 3;
+					next_level_keys.insert(key);
+				}
+			}
+			_next_level_keys.push_back(next_level_keys);
+			if (next_level_keys.size() > _num_output_pixels) {
+				_num_output_pixels = next_level_keys.size();
 			}
 		}
-		_next_level_keys.push_back(next_level_keys);
-		if (next_level_keys.size() > _num_output_pixels) {
-			_num_output_pixels = next_level_keys.size();
-		}
+
+		vector<int> features_shape;
+		features_shape.push_back(_batch_size);
+		features_shape.push_back(_num_output_channels);
+		features_shape.push_back(_num_output_pixels);
+		top[0]->Reshape(features_shape);
+
+		_col_buffer_shape.clear();
+		_col_buffer_shape.push_back(_num_input_pixels * _filter_size * _filter_size * _filter_size);
+		_col_buffer_shape.push_back(_num_output_pixels);
+
+		_col_buffer.Reshape(_col_buffer_shape);
 	}
-
-	vector<int> features_shape;
-	features_shape.push_back(_batch_size);
-	features_shape.push_back(_num_output_channels);
-	features_shape.push_back(_num_output_pixels);
-	top[0]->Reshape(features_shape);
-
-	_col_buffer_shape.clear();
-	_col_buffer_shape.push_back(_num_input_pixels * _filter_size * _filter_size * _filter_size);
-	_col_buffer_shape.push_back(_num_output_pixels);
-
-	_col_buffer.Reshape(_col_buffer_shape);
 }
 
 template <typename Dtype>

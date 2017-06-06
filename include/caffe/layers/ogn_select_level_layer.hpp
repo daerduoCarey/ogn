@@ -31,6 +31,8 @@ class OGNSelectLevelLayer : public OGNLayer<Dtype> {
   int _current_res;
   int _num_pixels;
 
+  bool _done_initial_reshape;
+
   vector<int> _batch_num_pixels;
 };
 

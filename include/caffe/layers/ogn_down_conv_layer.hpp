@@ -54,6 +54,8 @@ class OGNDownConvLayer : public OGNLayer<Dtype> {
   int _batch_size;
 
   int _filter_size;
+  
+  bool _done_initial_reshape;
 };
 
 }  // namespace caffe
