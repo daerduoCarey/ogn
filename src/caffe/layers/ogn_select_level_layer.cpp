@@ -81,6 +81,8 @@ void OGNSelectLevelLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 		output_shape.push_back(_num_pixels);
 		top[0]->Reshape(output_shape);
 	}
+
+	std::cout <<"OGNSelectLevelLayer<Dtype>::Reshape" << _num_pixels << std::endl;
 }
 
 template <typename Dtype>
