@@ -12,8 +12,6 @@ void OGNConcatLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
 	string prefix = "\t\tOGNConcatLayer:: LayerSetUp: \t";
 
-	std::cout << "Setup!!" << std::endl;
-
 	_key1_layer_name = this->layer_param_.ogn_concat_param().key1_layer();
 	_key2_layer_name = this->layer_param_.ogn_concat_param().key2_layer();
 
@@ -38,10 +36,10 @@ void OGNConcatLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void OGNConcatLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
-	std::cout << "Reshape!!" << std::endl;
 
 	_l1_num_pixels = bottom[0]->shape(2);
 	_l2_num_pixels = bottom[1]->shape(2);
+
 	_num_pixels = _l1_num_pixels + _l2_num_pixels;
 
 	vector<int> output_shape;
@@ -57,9 +55,6 @@ void OGNConcatLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 
 	string prefix = "\t\tOGNConcatLayer:: Forward_cpu: \t";
 
-	std::cout << "_l1_num_pixels: " << _l1_num_pixels << std::endl;
-	std::cout << "_l2_num_pixels: " << _l2_num_pixels << std::endl;
-
 	this->_octree_keys.clear();
 	this->_octree_prop.clear();
 
@@ -68,21 +63,17 @@ void OGNConcatLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 	boost::shared_ptr<Layer<Dtype> > base2_ptr = this->parent_net()->layer_by_name(_key2_layer_name);
 	boost::shared_ptr<OGNLayer<Dtype> > l2_ptr = boost::dynamic_pointer_cast<OGNLayer<Dtype> >(base2_ptr);
 
-	std::cout << "1" << std::endl;
-
 	const Dtype* input_arr1 = bottom[0]->cpu_data();
 	const Dtype* input_arr2 = bottom[1]->cpu_data();
 
 	Dtype* output_arr = top[0]->mutable_cpu_data();
 	memset(output_arr, 0, sizeof(Dtype) * _batch_size * _num_channels * _num_pixels);
 
-	std::cout << "2" << std::endl;
-
-	int counter = 0;
 	for (int n = 0; n < _batch_size; ++n) {
+		int counter = 0;
+
 		GeneralOctree<int> octree_keys;
 		GeneralOctree<int> octree_prop;
-		std::cout << "Start: " << n << std::endl;
 
 		set<KeyType> l1_keys;
 		GeneralOctree<int>* l1_tree = &(l1_ptr->get_keys_octree(n));
@@ -102,10 +93,7 @@ void OGNConcatLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 			}
 		}
 		
-		std::cout << "Middle: " << n << std::endl;
-
 		GeneralOctree<int>* l2_tree = &(l2_ptr->get_keys_octree(n));
-		std::cout << "Middle2: " << n << std::endl;
 		for (GeneralOctree<int>::iterator it=l2_tree->begin(); it!=l2_tree->end(); ++it) {
 			KeyType key = it->first;
 			if (key != GeneralOctree<int>::INVALID_KEY()) {
@@ -124,7 +112,6 @@ void OGNConcatLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 				}
 			}
 		}
-		std::cout << "End: " << n << std::endl;
 
 		this->_octree_keys.push_back(octree_keys);
 		this->_octree_prop.push_back(octree_prop);
@@ -154,14 +141,14 @@ void OGNConcatLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
 			KeyType key = it->first;
 			int cur_value_ind = this->_octree_keys[n].get_value(key);
 			if(key != GeneralOctree<int>::INVALID_KEY()) {
-				if (l1_ptr->get_keys_octree(n).get_value(key) > 0) {
+				if (l1_ptr->get_keys_octree(n).get_value(key) >= 0) {
 					int value_ind = l1_ptr->get_keys_octree(n).get_value(key);
 					for (int ch = 0; ch < _num_channels; ++ch) {
 						int left_ind = n*_num_channels*_num_pixels + ch*_num_pixels + cur_value_ind;
 						int right_ind = n*_num_channels*_l1_num_pixels + ch*_l1_num_pixels + value_ind;
 						output_arr1[right_ind] += input_arr[left_ind];
 					}
-				} else if (l2_ptr->get_keys_octree(n).get_value(key) > 0) {
+				} else if (l2_ptr->get_keys_octree(n).get_value(key) >= 0) {
 					int value_ind = l2_ptr->get_keys_octree(n).get_value(key);
 					for (int ch = 0; ch < _num_channels; ++ch) {
 						int left_ind = n*_num_channels*_num_pixels + ch*_num_pixels + cur_value_ind;

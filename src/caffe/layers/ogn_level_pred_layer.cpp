@@ -38,6 +38,7 @@ void OGNLevelPredLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
 
 	string prefix = "\t\tOGNLevelPredLayer:: Forward_cpu: \t";
+	std::cout << prefix << std::endl;
 
 	this->_octree_keys.clear();
 	this->_octree_prop.clear();
@@ -85,6 +86,9 @@ void OGNLevelPredLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void OGNLevelPredLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+
+	string prefix = "\t\tOGNLevelPredLayer:: Backward_cpu: \t";
+	std::cout << prefix << std::endl;
 
 	boost::shared_ptr<Layer<Dtype> > base_ptr = this->parent_net()->layer_by_name(_key_layer_name);
 	boost::shared_ptr<OGNLayer<Dtype> > l_ptr = boost::dynamic_pointer_cast<OGNLayer<Dtype> >(base_ptr);

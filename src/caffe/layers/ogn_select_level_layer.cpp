@@ -46,6 +46,8 @@ void OGNSelectLevelLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 		boost::shared_ptr<Layer<Dtype> > base_ptr = this->parent_net()->layer_by_name(_key_layer_name);
 		boost::shared_ptr<OGNLayer<Dtype> > l_ptr = boost::dynamic_pointer_cast<OGNLayer<Dtype> >(base_ptr);
 
+		const Dtype* input_arr = bottom[0]->cpu_data();
+
 		_num_pixels = 0;
 		for (int n = 0; n < _batch_size; ++n) {
 			int count = 0;
@@ -58,7 +60,9 @@ void OGNSelectLevelLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 				int level = current_tree->compute_level(key);
 				if (level != _current_level) continue;
 				
-				Dtype value = it->second;
+				int value_ind = current_tree->get_value(key);
+				int input_ind = n*bottom[0]->shape(1)+value_ind;
+				byte value = input_arr[input_ind];
 				if (key != GeneralOctree<int>::INVALID_KEY() && value) {
 					key_octree.add_element(key, count);
 					prop_octree.add_element(key, PROP_TRUE);
@@ -78,16 +82,17 @@ void OGNSelectLevelLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 		vector<int> output_shape;
 		output_shape.push_back(_batch_size);
 		output_shape.push_back(1);
+		if (_num_pixels == 0) _num_pixels = 1;
 		output_shape.push_back(_num_pixels);
 		top[0]->Reshape(output_shape);
 	}
-
-	std::cout <<"OGNSelectLevelLayer<Dtype>::Reshape" << _num_pixels << std::endl;
 }
 
 template <typename Dtype>
 void OGNSelectLevelLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
+
+	string prefix = "OGNSelectLevelLayer<Dtype>::Forward_cpu";
 
 	Dtype* output_arr = top[0]->mutable_cpu_data();
 	memset(output_arr, 0, sizeof(Dtype) * _batch_size * 1 * _num_pixels);

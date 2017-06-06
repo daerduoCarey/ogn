@@ -6,6 +6,8 @@ template <typename Dtype>
 void OGNDownConvLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
 
+	string prefix = "OGNDownConvLayer<Dtype>::Forward_gpu";
+
     propagate_keys_cpu();
 
     for (int n = 0; n < _batch_size; n++)
@@ -27,6 +29,8 @@ void OGNDownConvLayer<Dtype>::Forward_gpu(const vector<Blob<Dtype>*>& bottom,
 template <typename Dtype>
 void OGNDownConvLayer<Dtype>::Backward_gpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
+
+	string prefix = "OGNDownConvLayer<Dtype>::Backward_gpu";
 
     for (int n = 0; n < _batch_size; ++n)
     {

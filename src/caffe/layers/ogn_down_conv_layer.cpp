@@ -45,7 +45,7 @@ void OGNDownConvLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 	
 	_batch_size = bottom[0]->shape(0);
 	_num_input_pixels = bottom[0]->shape(2);
-   
+
 	if(!_done_initial_reshape) {
 		vector<int> features_shape;
 		features_shape.push_back(_batch_size);
@@ -85,7 +85,7 @@ void OGNDownConvLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 		top[0]->Reshape(features_shape);
 
 		_col_buffer_shape.clear();
-		_col_buffer_shape.push_back(_num_input_pixels * _filter_size * _filter_size * _filter_size);
+		_col_buffer_shape.push_back(_num_input_channels * _filter_size * _filter_size * _filter_size);
 		_col_buffer_shape.push_back(_num_output_pixels);
 
 		_col_buffer.Reshape(_col_buffer_shape);
@@ -97,8 +97,9 @@ void OGNDownConvLayer<Dtype>::propagate_keys_cpu() {
 	this->_octree_keys.clear();
 	this->_octree_prop.clear();
 
-	int output_counter = 0;
 	for (int n = 0; n < _batch_size; ++n) {
+		int output_counter = 0;
+
 		GeneralOctree<int> octree_keys;
 		GeneralOctree<int> octree_prop;
 		
@@ -130,13 +131,15 @@ template <typename Dtype>
 void OGNDownConvLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
 
+	string prefix = "OGNDownConvLayer<Dtype>::Forward_cpu";
+
 	propagate_keys_cpu();
 
 	for (int n=0; n<_batch_size; n++) {
 		int num_elements = this->_next_level_keys[n].size();
 		resize_computation_buffers_cpu(num_elements);
 		im2col_octree_cpu(n, bottom, top);
-		forward_cpu_gemm(this->blobs_[0]->cpu_data(), _col_buffer.mutable_cpu_data(),
+		forward_cpu_gemm(this->blobs_[0]->cpu_data(), _col_buffer.cpu_data(),
 				top[0]->mutable_cpu_data() + n * _num_output_channels * _num_output_pixels);
 		forward_cpu_bias(top[0]->mutable_cpu_data() + 
 				n * _num_output_channels * _num_output_pixels, this->blobs_[1]->cpu_data());
@@ -147,14 +150,19 @@ template <typename Dtype>
 void OGNDownConvLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
 
+	string prefix = "OGNDownConvLayer<Dtype>::Backward_cpu";
+
 	Dtype* weight_diff = this->blobs_[0]->mutable_cpu_diff();
 	Dtype* bias_diff = this->blobs_[1]->mutable_cpu_diff();
 	const Dtype* top_diff = top[0]->cpu_diff();
+
+	memset(weight_diff, 0, sizeof(Dtype)*_num_output_channels*_num_input_channels*_filter_size*_filter_size*_filter_size);
+	memset(bias_diff, 0, sizeof(Dtype)*_num_output_channels);
 	
 	for (int n = 0; n < _batch_size; ++n) {
 		resize_computation_buffers_cpu(this->_octree_keys[n].num_elements());
 		im2col_octree_cpu(n, bottom, top);
-		weight_cpu_gemm(_col_buffer.mutable_cpu_data(),
+		weight_cpu_gemm(_col_buffer.cpu_data(),
 			top_diff + n * _num_output_channels * _num_output_pixels, weight_diff);
 		backward_cpu_bias(bias_diff, top_diff + n * _num_output_channels * _num_output_pixels);
 		backward_cpu_gemm(top_diff + n * _num_output_channels * _num_output_pixels,
@@ -257,13 +265,12 @@ void OGNDownConvLayer<Dtype>::im2col_octree_cpu(int batch_ind, const vector<Blob
 	boost::shared_ptr<OGNLayer<Dtype> > l_ptr = boost::dynamic_pointer_cast<OGNLayer<Dtype> >(base_ptr);
 
 	set<KeyType>* cur_next_level_keys = &(this->_next_level_keys[batch_ind]);
+	GeneralOctree<int>* parent_keys_octree = &(l_ptr->get_keys_octree(batch_ind));
 	for(set<KeyType>::iterator it = cur_next_level_keys->begin(); it != cur_next_level_keys->end(); ++it) {
 		KeyType key = *it;
 		key <<= 3;
 		
-		GeneralOctree<int>* parent_keys_octree = &(l_ptr->get_keys_octree(batch_ind));
 		std::vector<KeyType> neighbors = parent_keys_octree->get_neighbor_keys(key, _filter_size);
-
 		for(int ch = 0; ch < _num_input_channels; ++ch) {
 			for(int el = 0; el < neighbors.size(); ++el) {
 				int col_buff_ind = ch * neighbors.size() * _col_buffer_shape[1] + 
