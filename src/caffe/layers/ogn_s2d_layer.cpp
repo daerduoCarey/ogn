@@ -12,10 +12,6 @@ void OGNS2DLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
 
 	string prefix = "\t\tOGNS2DLayer:: LayerSetUp: \t";
 
-	_batch_size = bottom[0]->shape(0);
-	_num_channels = bottom[0]->shape(1);
-	_num_pixels = bottom[0]->shape(2);
-	
 	_current_level = this->layer_param_.ogn_s2d_param().level();
 	_current_res = pow(2, _current_level);
 
@@ -26,6 +22,10 @@ template <typename Dtype>
 void OGNS2DLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
 
+	_batch_size = bottom[0]->shape(0);
+	_num_channels = bottom[0]->shape(1);
+	_num_pixels = bottom[0]->shape(2);
+	
 	vector<int> output_shape;
 	output_shape.push_back(_batch_size);
 	output_shape.push_back(_num_channels);

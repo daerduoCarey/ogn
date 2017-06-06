@@ -11,20 +11,21 @@ void OGNLevelPredLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
 
 	string prefix = "\t\tOGNLevelPredLayer:: LayerSetUp: \t";
-
-	_batch_size = bottom[0]->shape(0);
-	
-	if (bottom[0]->shape(1) != OGN_NUM_CLASSES) {
-		CHECK(false) << prefix << "Input should be have channel length OGN_NUM_CLASSES = " << OGN_NUM_CLASSES << std::endl;
-	}
-
-	_num_pixels = bottom[0]->shape(2);
 	_key_layer_name = this->layer_param_.ogn_level_pred_param().key_layer();
 }
 
 template <typename Dtype>
 void OGNLevelPredLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
+
+	_batch_size = bottom[0]->shape(0);
+	
+	string prefix = "\t\tOGNLevelPredLayer:: Reshape: \t";
+	if (bottom[0]->shape(1) != OGN_NUM_CLASSES) {
+		CHECK(false) << prefix << "Input should be have channel length OGN_NUM_CLASSES = " << OGN_NUM_CLASSES << std::endl;
+	}
+
+	_num_pixels = bottom[0]->shape(2);
 
 	vector<int> output_shape;
 	output_shape.push_back(_batch_size);
@@ -38,7 +39,6 @@ void OGNLevelPredLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
 
 	string prefix = "\t\tOGNLevelPredLayer:: Forward_cpu: \t";
-	std::cout << prefix << std::endl;
 
 	this->_octree_keys.clear();
 	this->_octree_prop.clear();
@@ -88,7 +88,6 @@ void OGNLevelPredLayer<Dtype>::Backward_cpu(const vector<Blob<Dtype>*>& top,
       const vector<bool>& propagate_down, const vector<Blob<Dtype>*>& bottom) {
 
 	string prefix = "\t\tOGNLevelPredLayer:: Backward_cpu: \t";
-	std::cout << prefix << std::endl;
 
 	boost::shared_ptr<Layer<Dtype> > base_ptr = this->parent_net()->layer_by_name(_key_layer_name);
 	boost::shared_ptr<OGNLayer<Dtype> > l_ptr = boost::dynamic_pointer_cast<OGNLayer<Dtype> >(base_ptr);

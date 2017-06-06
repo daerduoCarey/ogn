@@ -119,6 +119,10 @@ void OGNPropLayer<Dtype>::compute_pixel_propagation(const vector<Blob<Dtype>*>& 
 
 			if(v == CLASS_MIXED)
 			{
+				Dtype empty_rate = input_values[bt * OGN_NUM_CLASSES * pixels + 0 * pixels + it->second];
+				Dtype filled_rate = input_values[bt * OGN_NUM_CLASSES * pixels + 1 * pixels + it->second];
+				Dtype mixed_rate = input_values[bt * OGN_NUM_CLASSES * pixels + 2 * pixels + it->second];
+
 				if(_nbh_prop_size > 1)
 				{
 					std::vector<KeyType> neighbors = l_ptr->get_keys_octree(bt).get_neighbor_keys(it->first, _nbh_prop_size);

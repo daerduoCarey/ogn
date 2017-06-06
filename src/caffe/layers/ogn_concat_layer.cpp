@@ -55,6 +55,8 @@ void OGNConcatLayer<Dtype>::Forward_cpu(const vector<Blob<Dtype>*>& bottom,
 
 	string prefix = "\t\tOGNConcatLayer:: Forward_cpu: \t";
 
+	std::cout<<prefix<<": "<<_key1_layer_name<<", "<<_key2_layer_name<<std::endl;
+
 	this->_octree_keys.clear();
 	this->_octree_prop.clear();
 
