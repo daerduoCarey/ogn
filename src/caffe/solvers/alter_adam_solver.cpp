@@ -50,7 +50,13 @@ void AlterAdamSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
   if( net_has_params_update_base[param_id] && net_has_params_update_bin[param_id] ) {
     const int iter = this->iter_ % net_params_update_base[param_id];
     const int bin  = net_params_update_bin[param_id];
-    if(bin != iter) {
+    int flag = 0;
+    if (bin == 0 && iter == 0) flag = 1;
+    else if (bin == 0 && iter > 0) flag = 0;
+    else if (bin > 0 && iter == 0) flag = 0;
+    else if (bin > 0 && iter > 0) flag = 1;
+    // if(bin != iter) {
+    if(flag == 0) {
       switch (Caffe::mode()) {
       case Caffe::CPU:
         caffe_set<Dtype>(net_params[param_id]->count(), Dtype(0), net_params[param_id]->mutable_cpu_diff());
@@ -61,7 +67,7 @@ void AlterAdamSolver<Dtype>::ComputeUpdateValue(int param_id, Dtype rate) {
       default:
         LOG(FATAL) << "Unknown caffe mode: " << Caffe::mode();
       }
-      return;            
+      return;
     } else {
       // Then, we have to update the learnable parameters.
     }
