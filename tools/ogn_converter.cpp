@@ -48,8 +48,8 @@ int main(int argc, char* argv[])
         cout << "Output file: " << output_file << endl;
         cout << "Minimum level: " << min_level << endl;
 
-        string input_ext = split(input_file, '.')[1];
-        string output_ext = split(output_file, '.')[1];
+        string input_ext = split(input_file, '.').back();
+        string output_ext = split(output_file, '.').back();
 
         //read converter input
         if(input_ext == "ot")
