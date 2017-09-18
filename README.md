@@ -15,7 +15,7 @@ Check `ORI_README.md` or [this github repo](https://github.com/lmb-freiburg/ogn)
 This github repo contains more GPU supported Caffe layers implementation to augment the original OGN paper experiments with auto-encoder and GAN experiments.
 I implement the Caffe layers to discriminate Octree reprensented shapes, including sparse convolution and pooling.
 
-<p align="center" width="80%"> 
+<p align="center" width="48"> 
 <img src="https://github.com/daerduoCarey/ogn/blob/master/teaser.png">
 </p>
 
