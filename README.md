@@ -16,7 +16,7 @@ This github repo contains more GPU supported Caffe layers implementation to augm
 I implement the Caffe layers to discriminate Octree reprensented shapes, including sparse convolution and pooling.
 
 <p align="center"> 
-<img src="https://github.com/daerduocarey/ogn/teaser.png">
+<img src="https://github.com/daerduocarey/ogn/blob/master/teaser.png">
 </p>
 
 In the above figures, the first rows are OGN generator (decoder) layers implemented by [this github repo](https://github.com/lmb-freiburg/ogn). The rest rows are discriminator (encoder) layers implemented in this repo.
@@ -25,12 +25,17 @@ This repo contains the implementation for `OGN Select Level Layer`, `OGN Level P
 
 We successfully make it work for the auto-encoder experiment. But due to time limit and some techinical issue, we believe the current framework is hard to make it work for GAN experiments. More training supervision signals, like the idea of Stacked GAN, should be helpful!
 
-Here is the [report](http://www.cs.stanford.edu/~kaichun/resume/cs468_project_report.pdf)
+Here is the [report](http://www.cs.stanford.edu/~kaichun/resume/cs468_project_report.pdf).
 
 # Disclaimer
+
+Use of our your own risk. No guarantee on code correctness and effectiveness.
 
 ## Contact
 Webpage: http://www.cs.stanford.edu/~kaichun/ 
 
 E-mail: kaichun [at] cs.stanford.edu
+
+## License
+MIT
 
