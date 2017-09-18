@@ -4,7 +4,7 @@ This is the repo containing the code for our CS468 course project, Spring 2017. 
 
 ## Original OGN paper
 
-Check `ORI_README.md` or [this github repo](https://github.com/lmb-freiburg/ogn) for original [OGN paper](https://arxiv.org/abs/1703.09438) implementation.
+Check `ORI_README.md` or [this github repo](https://github.com/lmb-freiburg/ogn) for the original [OGN paper](https://arxiv.org/abs/1703.09438) implementation.
 
 <p align="center"> 
 <img src="https://github.com/mtatarchenko/ogn/blob/master/thumbnail.png">
@@ -16,7 +16,7 @@ This github repo contains more GPU supported Caffe layers implementation to augm
 I implement the Caffe layers to discriminate Octree reprensented shapes, including sparse convolution and pooling.
 
 <p align="center"> 
-<img src="https://github.com/daerduocarey/ogn/blob/master/teaser.png">
+<img src="https://github.com/daerduoCarey/ogn/blob/master/teaser.png">
 </p>
 
 In the above figures, the first rows are OGN generator (decoder) layers implemented by [this github repo](https://github.com/lmb-freiburg/ogn). The rest rows are discriminator (encoder) layers implemented in this repo.
