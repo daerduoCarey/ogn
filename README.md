@@ -16,7 +16,7 @@ This github repo contains more GPU supported Caffe layers implementation to augm
 I implement the Caffe layers to discriminate Octree reprensented shapes, including sparse convolution and pooling.
 
 <p align="center"> 
-<img src="https://github.com/daerduoCarey/ogn/blob/master/teaser.png" width="80%"\>
+<img src="https://github.com/daerduoCarey/ogn/blob/master/teaser.png" width="60%"\>
 </p>
 
 In the above figures, the first rows are OGN generator (decoder) layers implemented by [this github repo](https://github.com/lmb-freiburg/ogn). The rest rows are discriminator (encoder) layers implemented in this repo.
