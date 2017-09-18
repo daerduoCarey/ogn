@@ -1,6 +1,6 @@
 # OGN
 
-This is the repo containing the code for CS468 course project, Spring 2017. I implement the Caffe layers to discriminate Octree reprensented shapes, including sparse convolution and pooling to do auto-encoder and GAN experiments using our discriminator (encoder) and OGN paper method as generator (decoder).
+This is the repo containing the code for our CS468 course project, Spring 2017. I implement the Caffe layers to discriminate Octree reprensented shapes, including sparse convolution and pooling to do auto-encoder and GAN experiments using our discriminator (encoder) and OGN paper method as generator (decoder).
 
 ## Original OGN paper
 
@@ -30,6 +30,7 @@ Here is the [report](http://www.cs.stanford.edu/~kaichun/resume/cs468_project_re
 # Disclaimer
 
 Use of our your own risk. No guarantee on code correctness and effectiveness.
+This project is done with collaboration with Karen Yang and Te-lin Wu.
 
 ## Contact
 Webpage: http://www.cs.stanford.edu/~kaichun/ 
